@@ -1,11 +1,7 @@
-import React from 'react'
-import { Box } from '@material-ui/core'
-import { useStyles } from './styles'
+import React, { ReactElement } from 'react'
 
-const HomePage = (): JSX.Element => {
-  const classes = useStyles()
-
-  return <Box />
+const HomePage = (): ReactElement => {
+  return <div>Home</div>
 }
 
 export default HomePage

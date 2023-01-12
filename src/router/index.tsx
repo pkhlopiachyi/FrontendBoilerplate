@@ -1,11 +1,11 @@
-import { lazy } from 'react'
+import { ReactElement } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { Layout } from './layouts'
 import routes from 'constants/routes'
 import HomePage from 'pages/HomePage'
 
 interface HOCProps {
-  children: JSX.Element
+  children: ReactElement
   isLoggedIn: boolean
 }
 
@@ -21,14 +21,8 @@ export const AppRouter = (): JSX.Element => {
   return (
     <Layout>
       <Routes>
-        <Route
-          path={routes.ROUTE_HOME}
-          element={
-            <PublicRoute isLoggedIn={true}>
-              <HomePage />
-            </PublicRoute>
-          }
-        />
+        <Route path={routes.ROUTE_HOME} element={<HomePage />} />
+        <Route path="*" element={<Navigate to={routes.ROUTE_HOME} />} />
       </Routes>
     </Layout>
   )
