@@ -1,0 +1,5 @@
+export const INVALID_JWT_ERROR = 'invalid jwt token'
+export const SESSEION_EXPIRED_ERROR = 'session expired'
+export const INVALID_RENEW_ERROR = 'invalid re-new token'
+export const INVALID_SESSION_ID = 'invalid session id'
+export const SESSION_CLOSED = 'session closed'

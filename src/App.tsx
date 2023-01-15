@@ -5,7 +5,7 @@ import { AppRouter } from 'router'
 import { ThemeProvider } from '@material-ui/core'
 import { baseTheme } from 'theme/materialTheme'
 
-const store = configStore()
+export const store = configStore()
 
 function App(): JSX.Element {
   return (

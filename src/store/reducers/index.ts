@@ -3,15 +3,20 @@ import { connectRouter } from 'connected-react-router'
 import history from 'helpers/history'
 
 //reducers
+import provider from './provider'
 
 //states
+import { ProviderState } from './provider/types'
 
 const rootReducer = combineReducers({
   router: connectRouter(history),
+  provider,
 })
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface RootState {}
+export interface RootState {
+  provider: ProviderState
+}
 
 declare global {
   type AppState = RootState
