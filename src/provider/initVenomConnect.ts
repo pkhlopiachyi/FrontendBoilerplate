@@ -16,7 +16,7 @@ const standaloneFallback = () =>
 
 export const initVenomConnect = async (checkNetworkId = 1010) => {
   return new VenomConnect({
-    theme: 'light',
+    theme: 'venom',
     checkNetworkId: checkNetworkId,
     checkNetworkName: 'Venom Testnet',
     providersOptions: {
