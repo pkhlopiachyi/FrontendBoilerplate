@@ -2,6 +2,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { ProviderState } from './types'
 import { VenomConnect } from 'venom-connect'
+import { string } from 'yup'
 
 export const initialState: ProviderState = {
   loading: false,
@@ -16,29 +17,20 @@ const { actions, reducer } = createSlice({
   name: 'provider',
   initialState,
   reducers: {
-    setVenomConnectRequest: (state) => {
+    setVenomConnect: (state, action: PayloadAction<VenomConnect>) => {
       state.loading = true
       state.error = false
+      state.venomConnect = action.payload
     },
-    setVenomConnectResponse: (state, action: PayloadAction<VenomConnect>) => {
-      state.loading = false
-      state.walletConnect = action.payload
-    },
-    setVenomProviderResponse: (state) => {
+    setVenomProvider: (state, action: PayloadAction<any>) => {
       state.loading = false
       state.error = true
+      state.venomProvider = action.payload
     },
-    setProviderRequest: (state, action: PayloadAction<any>) => {
-      state.loading = true
-      state.error = false
-    },
-    setProviderResponse: (state, action: PayloadAction<any>) => {
-      state.provider = action.payload
-      state.loading = false
-    },
-    setProviderError: (state) => {
-      state.loading = false
-      state.error = true
+    setUsetData: (state, action: PayloadAction<{ address: string; publicKey: string; balance: number }>) => {
+      state.address = action.payload.address
+      state.publicKey = action.payload.publicKey
+      state.balance = action.payload.balance
     },
     connectVenomWalletRequest: (state) => {
       state.loading = true

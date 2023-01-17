@@ -1,21 +1,32 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { Box, Button } from '@material-ui/core'
 import { initVenomConnect } from './initVenomConnect'
+import { useDispatch, useSelector } from 'react-redux'
+import { ProviderActions } from 'store/reducers/provider'
+import {
+  venomAddressSelector,
+  venomConnectSelector,
+  venomProviderSelector,
+  venomPublicKeySelector,
+} from 'store/selectors/provider'
 
 const Provider = () => {
-  const [venomConnect, setVenomConnect] = useState<any>()
-  const [venomProvider, setVenomProvider] = useState<any>()
-  const [address, setAddress] = useState()
-  const [balance, setBalance] = useState()
-  const [publicKey, setPublicKey] = useState()
+  const dispatch = useDispatch()
 
-  const onInitButtonClick = async () => {
+  const venomProvider = useSelector(venomProviderSelector)
+  const venomConnect = useSelector(venomConnectSelector)
+
+  const address = useSelector(venomAddressSelector)
+  const publicKey = useSelector(venomPublicKeySelector)
+
+  const onInitButtonClick = useCallback(async () => {
     const initedVenomConnect = await initVenomConnect()
-    setVenomConnect(initedVenomConnect)
+    dispatch(ProviderActions.setVenomConnect(initedVenomConnect))
 
-    await checkAuth(initedVenomConnect)
-  }
+    const auth = await initedVenomConnect?.checkAuth()
+    if (auth) await getAddress(initedVenomConnect)
+  }, [])
 
   useEffect(() => {
     onInitButtonClick()
@@ -47,13 +58,9 @@ const Provider = () => {
     return address
   }
 
-  const checkAuth = async (_venomConnect: any) => {
-    const auth = await _venomConnect?.checkAuth()
-    if (auth) await getAddress(_venomConnect)
-  }
-
   const onConnectButtonClick = async () => {
-    venomConnect?.connect()
+    dispatch(ProviderActions.connectVenomWalletRequest())
+    // venomConnect?.connect()
   }
 
   const onDisconnectButtonClick = async () => {
@@ -61,13 +68,9 @@ const Provider = () => {
   }
 
   const onSignClick = async () => {
-    const providerState = await venomProvider.getProviderState()
-    const _address = providerState?.permissions.accountInteraction?.address
-    // const _publicKey = providerState?.permissions.accountInteraction?.publicKey
+    const data = { address }
 
-    const data = { _address }
-
-    if (_address && publicKey) {
+    if (address && publicKey) {
       console.log(`data::`, data)
 
       const signed = await venomProvider.signData({
@@ -82,21 +85,22 @@ const Provider = () => {
     const _address = _provider ? await getAddress(_provider) : undefined
     const _balance = _provider && _address ? await getBalance(_provider, _address) : undefined
 
-    const publicKey = _provider ? await getPublicKey(_provider) : undefined
+    const _publicKey = _provider ? await getPublicKey(_provider) : undefined
 
-    setAddress(_address)
-    setBalance(_balance)
-    setPublicKey(publicKey)
+    dispatch(ProviderActions.setUsetData({ address: _address, balance: _balance, publicKey: _publicKey }))
 
-    if (_provider && _address)
-      setTimeout(() => {
-        check(_provider)
-      }, 100)
+    console.log(_address)
+    console.log(_balance)
+    console.log(_publicKey)
+
+    // if (_provider && address)
+    //   setTimeout(() => {
+    //     check(_provider)
+    //   }, 100)
   }
 
   const onConnect = async (provider: any) => {
-    setVenomProvider(provider)
-    // await provider.ensureInitialized()
+    dispatch(ProviderActions.setVenomProvider(provider))
 
     check(provider)
   }
@@ -107,7 +111,6 @@ const Provider = () => {
     return () => {
       off?.()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [venomConnect])
 
   return (

@@ -1,8 +1,8 @@
 import { VenomConnect } from 'venom-connect'
 
 export interface ProviderState {
-  walletConnect?: VenomConnect
-  provider?: any
+  venomConnect?: VenomConnect
+  venomProvider?: any
   loading: boolean
   error: boolean
   address: string
