@@ -1,25 +1,7 @@
-import { Address, ProviderRpcClient } from 'everscale-inpage-provider'
-import { EverscaleStandaloneClient } from 'everscale-standalone-client'
 import { useEffect, useState } from 'react'
-
-import { VenomConnect } from 'venom-connect'
 
 import { Box, Button } from '@material-ui/core'
 import { initVenomConnect } from './initVenomConnect'
-
-const initTheme = 'light' as const
-
-const standaloneFallback = () =>
-  EverscaleStandaloneClient.create({
-    connection: {
-      id: 1010,
-      group: 'venom_testnet',
-      type: 'jrpc',
-      data: {
-        endpoint: 'https://jrpc.venom.foundation/rpc',
-      },
-    },
-  })
 
 const Provider = () => {
   const [venomConnect, setVenomConnect] = useState<any>()
@@ -38,13 +20,6 @@ const Provider = () => {
   useEffect(() => {
     onInitButtonClick()
   }, [])
-
-  useEffect(() => {
-    console.log('here')
-
-    console.log(address)
-    console.log(balance)
-  }, [venomProvider, address, balance])
 
   const getAddress = async (provider: any) => {
     const providerState = await provider?.getProviderState?.()
@@ -67,7 +42,7 @@ const Provider = () => {
   const getPublicKey = async (provider: any) => {
     const providerState = await provider?.getProviderState?.()
 
-    const address = providerState?.permissions.accountInteraction?.address.toString()
+    const address = providerState?.permissions.accountInteraction?.publicKey.toString()
 
     return address
   }
@@ -86,13 +61,20 @@ const Provider = () => {
   }
 
   const onSignClick = async () => {
-    await venomProvider.ensureInitialized()
+    const providerState = await venomProvider.getProviderState()
+    const _address = providerState?.permissions.accountInteraction?.address
+    // const _publicKey = providerState?.permissions.accountInteraction?.publicKey
 
-    if (address && publicKey) {
-      await venomProvider?.signData({
-        publicKey,
-        data: btoa(JSON.stringify({ address: 'ekrer' })),
+    const data = { _address }
+
+    if (_address && publicKey) {
+      console.log(`data::`, data)
+
+      const signed = await venomProvider.signData({
+        publicKey: publicKey,
+        data: btoa(JSON.stringify(data)),
       })
+      console.log(`signed::`, signed)
     }
   }
 
@@ -114,6 +96,7 @@ const Provider = () => {
 
   const onConnect = async (provider: any) => {
     setVenomProvider(provider)
+    // await provider.ensureInitialized()
 
     check(provider)
   }
