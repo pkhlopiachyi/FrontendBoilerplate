@@ -9,4 +9,5 @@ export interface ProviderState {
   publicKey: string
   balance: number
   jwt: string
+  isConnected: boolean
 }

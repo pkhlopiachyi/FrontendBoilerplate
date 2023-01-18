@@ -2,7 +2,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { ProviderState } from './types'
 import { VenomConnect } from 'venom-connect'
-import { string } from 'yup'
+import { WALLET_CONNECTED_KEY } from 'store/sagas/provider'
 
 export const initialState: ProviderState = {
   loading: false,
@@ -11,6 +11,7 @@ export const initialState: ProviderState = {
   publicKey: '',
   balance: 0,
   jwt: '',
+  isConnected: localStorage.getItem(WALLET_CONNECTED_KEY) === 'true',
 }
 
 const { actions, reducer } = createSlice({
@@ -27,24 +28,13 @@ const { actions, reducer } = createSlice({
       state.error = true
       state.venomProvider = action.payload
     },
-    setUsetData: (state, action: PayloadAction<{ address: string; publicKey: string; balance: number }>) => {
-      state.address = action.payload.address
-      state.publicKey = action.payload.publicKey
-      state.balance = action.payload.balance
-    },
     connectVenomWalletRequest: (state) => {
       state.loading = true
       state.error = false
     },
-    connectVenomWalletResponse: (
-      state,
-      action: PayloadAction<{ address: string; balance: number; jwt: string; publicKey: string }>
-    ) => {
+    connectVenomWalletResponse: (state, action: PayloadAction) => {
       state.loading = false
-      state.address = action.payload.address
-      state.balance = action.payload.balance
-      state.jwt = action.payload.jwt
-      state.publicKey = action.payload.publicKey
+      state.isConnected = true
     },
     connectVenomWalletError: (state) => {
       state.loading = false
@@ -58,10 +48,42 @@ const { actions, reducer } = createSlice({
       state.loading = false
       state.address = ''
       state.balance = 0
+      state.publicKey = ''
+      state.isConnected = false
+      state.jwt = ''
     },
     disconnectWalletError: (state) => {
       state.loading = false
       state.error = true
+    },
+    getWalletDataRequest: (state) => {
+      state.loading = true
+      state.error = false
+    },
+    getUserDataResponse: (state, action: PayloadAction<{ address: string; publicKey: string }>) => {
+      state.loading = true
+      state.address = action.payload.address
+      state.publicKey = action.payload.publicKey
+    },
+    getUserDataError: (state) => {
+      state.loading = true
+      state.error = false
+    },
+    getUserBalanceRequest: (state, action: PayloadAction<{ address: string }>) => {
+      state.loading = true
+      state.error = false
+    },
+    getUserBalanceResponse: (state, action: PayloadAction<{ balance: number }>) => {
+      state.loading = true
+      state.error = false
+      state.balance = action.payload.balance
+    },
+    getUserBalanceError: (state) => {
+      state.error = true
+      state.loading = false
+    },
+    setIsConnected: (state, action: PayloadAction<boolean>) => {
+      state.isConnected = action.payload
     },
   },
 })

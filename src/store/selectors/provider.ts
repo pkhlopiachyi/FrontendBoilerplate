@@ -29,3 +29,8 @@ export const jwtTokenSelector = createSelector(
   (state: AppState) => state.provider.address,
   (value) => value
 )
+
+export const isWalletConnectedSelector = createSelector(
+  (state: AppState) => state.provider.isConnected,
+  (value) => value
+)
